@@ -132,8 +132,11 @@ function send(pixelsToSend){ //217 chars
     console.log(tx)
 
     setTimeout(datacash.send(tx, function(err, res) {
-      console.log(err,res)
-    }),1000);
+      console.log(res)
+      if (err){
+        console.log(err)
+      }
+    }),10000);
 
     startPos = endPos;
   }
@@ -236,7 +239,7 @@ function setPixel(r,g,b,cX,cY,isNew){
   imagedata.data[3] = 255;
 
   ctx.putImageData(imagedata, cX, cY);
-  console.log("SetPixel:","X:",cX,"Y:",cY,imagedata)
+  // console.log("SetPixel:","X:",cX,"Y:",cY,imagedata)
   coordinate = cY+"|"+cX
   if (isNew){
     pixelDict[coordinate] = [imagedata.data[0],imagedata.data[1],imagedata.data[2]]

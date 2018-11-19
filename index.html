@@ -9,10 +9,11 @@
   <div>
     <input id='pkey' value='hier Privatekey einfügen' size='50'>
     X|Y: <span id='coordinates'>0|0</span>
-    <p>press 'z' to write into Blockchain</p>
-    <button onclick='setColor(255,0,0)'>red</button>
-    <button onclick='setColor(0,255,0)'>green</button>
-    <button onclick='setColor(0,0,255)'>blue</button>
+    <p>Press 'z' to write into Blockchain - Color:
+      <button style='background-color: red;' onclick='setColor(255,0,0)'>red</button>
+      <button style='background-color: green;' onclick='setColor(0,255,0)'>green</button>
+      <button style='background-color: blue;' onclick='setColor(0,0,255)'>blue</button>
+    </p>
   </div>
   <canvas id="canvas" width="1000" height=1000></canvas>
 
