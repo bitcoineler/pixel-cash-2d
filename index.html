@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>HTML5 Canvas Painter</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div>
+    <input id='pkey' value='hier Privatekey einfügen' size='50'>
+    X|Y: <span id='coordinates'>0|0</span>
+    <p>press 'z' to write into Blockchain</p>
+    <button onclick='setColor(255,0,0)'>red</button>
+    <button onclick='setColor(0,255,0)'>green</button>
+    <button onclick='setColor(0,0,255)'>blue</button>
+  </div>
+  <canvas id="canvas" width="1000" height=1000></canvas>
+
+  <script  src="js/index.js"></script>
+  <script src='https://unpkg.com/datacash'></script>
+  <script>
+    bitdb();
+  </script>
+</body>
+</html>
