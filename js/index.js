@@ -37,7 +37,7 @@ function bitdb(){
   };
 
   var b64 = btoa(JSON.stringify(query));
-  var url = "https://bitdb.network/q/" + b64;
+  var url = "https://bitgraph.network/q/" + b64;
 
   console.log(url)
 
@@ -104,31 +104,19 @@ function roundUp(num, precision) {
 
 // Enter a compressed private key here.
 let pkey = document.getElementById('pkey').value;
-// Payment address that the payments will be sent to.  I used the one
-// associated with the above private key.
-let cashAddress = '';
-
 // Async-await compatible timeout function
 let delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 // An async-await style function that makes a single
 // datasend.call for the message supplied as the argument
 let sendOneTransaction = async function(oneMessage) {
-  // Returns a "promise" function that will pass
-  // the results of datacash.send back to the
-  // function that called sendOneTransaction.
-  // In this case it's the send function
-  // that gets executed when the button is pressed.
   return new Promise(function(resolve, reject) {
     console.log('Now sending message:', oneMessage);
+    // console.log('pkey:',pkey)
     datacash.send({
-      data: ["0x8801", oneMessage],
+      data: ["0x8801", "0x"+oneMessage],
       cash: {
         key: pkey,
-        fee: 250
-        // to: [{
-        //   address: cashAddress,
-        //   value: 500
-        // }]
+        rpc: "https://bchsvexplorer.com"
       }
     }, function(errorMessage, transactionId) {
       if (errorMessage) {
@@ -172,47 +160,10 @@ async function send(pixelsToSend) {
       console.log('There was an error in sending',hexPayload,':',error);
     }
     // Wait three seconds in between messages
-    await delay(3000);
+    await delay(1000);
     startPos = endPos;
   }
 };
-
-// function send(pixelsToSend){
-//   console.log("tosend:",pixelsToSend)
-//   var pkey = document.getElementById('pkey').value
-//   var prefix = "0x8801"
-//   var roundCapacity = 36
-//
-//   var rounds = roundUp(pixelsToSend.length / roundCapacity, 0)
-//   console.log("SendRounds:",rounds)
-//
-//   var startPos = 0
-//   for (count = 1; count <= rounds; count++){
-//     var endPos = startPos+roundCapacity
-//     var hexPayload = []
-//     var batch = pixelsToSend.slice(startPos,endPos)
-//     for (pixel in batch){
-//       var hexPixel = pad(parseInt(batch[pixel], 2).toString(16),12).toUpperCase();
-//       hexPayload.push(hexPixel)
-//     }
-//
-//     hexPayload = hexPayload.join("")
-//     console.log("payload:",hexPayload)
-//
-//     var tx = {
-//         data: [prefix,"0x"+hexPayload],
-//         cash: { key: pkey }
-//       }
-//
-//     datacash.send(tx, function(err, res) {
-//             console.log("result",res);
-//           if (err){
-//             console.log(err);
-//           };
-//     });
-//     startPos = endPos;
-//   }
-// }
 
 function pixelArrayToBin(input){
   console.log("pixelArrayToBin: ",input)
