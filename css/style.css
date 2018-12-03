@@ -3,5 +3,12 @@ html, body {
     padding: 0;
 }
 #canvas {
-    background: grey;
+    background: #F2F2F2;
+}
+
+#canvas-container {
+    background: #650404;
+    padding-left: 15px;
+    padding-top: 70px;
+    padding-bottom: 70px;
 }

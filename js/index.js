@@ -1,13 +1,12 @@
 const canvas = document.querySelector('#canvas');
 const ctx = canvas.getContext('2d');
-// canvas.width = window.innerWidth;
-// canvas.height = window.innerHeight;
+
 canvas.width = 1024;
 canvas.height = 1024;
-ctx.strokeStyle = '#2196F3';
-ctx.lineJoin = 'round';
-ctx.lineCap = 'round';
-ctx.lineWidth = 1;
+// ctx.strokeStyle = '#2196F3';
+// ctx.lineJoin = 'round';
+// ctx.lineCap = 'round';
+// ctx.lineWidth = 1;
 
 let drawingMode = false;
 let cX = 0; //X coordinate
@@ -223,15 +222,6 @@ function keyPressed(e){
 function toLocalStorage(){
   localStorage.pixel = JSON.stringify(pixelDict);
 }
-
-// function fromLocalStorage(){
-//   try {
-//     var pixelArray = JSON.parse(localStorage.pixel);
-//   } catch {
-//     var pixelArray = ""
-//   }
-//   return pixelArray
-// }
 
 function click(e){
   [cX, cY] = [e.offsetX, e.offsetY];

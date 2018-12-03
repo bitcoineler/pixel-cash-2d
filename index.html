@@ -3,24 +3,46 @@
 <head>
   <meta charset="UTF-8">
   <title>HTML5 Canvas Painter</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 <body>
-  <div>
-    <input id='pkey' value='hier Privatekey einfügen' size='50'>
-    X|Y: <span id='coordinates'>0|0</span>
-    <p>Press 'z' to write into Blockchain - Color:
-      <button style='background-color: red;' onclick='setColor(255,0,0)'>red</button>
-      <button style='background-color: green;' onclick='setColor(0,255,0)'>green</button>
-      <button style='background-color: blue;' onclick='setColor(0,0,255)'>blue</button>
-    </p>
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#">BCHSV.place</a>
+      </div>
+      <ul class="nav navbar-nav">
+        <li>Press 'z' to write into Blockchain</li>
+        <input class="form-control" id='pkey' value='Privatekey' size='20'>
+      </ul>
+    </div>
+  </nav>
+  <div id='canvas-container'>
+    <canvas id="canvas" width="1024" height=1024></canvas>
   </div>
-  <canvas id="canvas" width="1000" height=1000></canvas>
-
-  <script  src="js/index.js"></script>
+  <script src="js/index.js"></script>
   <script src='https://unpkg.com/datacash'></script>
+
   <script>
     bitdb();
   </script>
+
+  <nav class="navbar navbar-inverse navbar-fixed-bottom">
+    <div class="container-fluid" style='color: red;'>X|Y: <span id='coordinates'>0|0</span></div>
+    <div class="container-fluid">
+      <ul class="nav navbar-nav">
+        <button class="btn navbar-btn" style='background-color: rgb(255,0,0);' onclick='setColor(255,0,0)'></button>
+        <button class="btn navbar-btn" style='background-color: rgb(255,255,0);' onclick='setColor(255,255,0)'></button>
+        <button class="btn navbar-btn" style='background-color: rgb(0,255,0);' onclick='setColor(0,255,0)'></button>
+        <button class="btn navbar-btn" style='background-color: rgb(0,255,255);' onclick='setColor(0,255,255)'></button>
+        <button class="btn navbar-btn" style='background-color: rgb(0,0,255);' onclick='setColor(0,0,255)'></button>
+        <button class="btn navbar-btn" style='background-color: rgb(255,0,255);' onclick='setColor(255,0,255)'></button>
+      </ul>
+    </div>
+  </nav>
 </body>
 </html>
