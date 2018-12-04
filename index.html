@@ -13,28 +13,26 @@
   <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container-fluid">
       <div class="navbar-header">
-        <a class="navbar-brand" href="#">BCHSV.place</a>
+        <a class="navbar-brand">BCHSV.place</a>
       </div>
-      <ul class="nav navbar-nav">
-        <li>Press 'z' to write into Blockchain</li>
-        <input class="form-control" id='pkey' value='Privatekey' size='20'>
-      </ul>
+      <p class="navbar-text">press 'z' to write into Blockchain</p>
+      <form class="navbar-form navbar-left" onsubmit="return false">
+        <div class="form-group">
+          <input class="form-control" id='pkey' type='password' placeholder='privatekey...' size='60'>
+        </div>
+      </form>
     </div>
   </nav>
   <div id='canvas-container'>
     <canvas id="canvas" width="1024" height=1024></canvas>
   </div>
-  <script src="js/index.js"></script>
-  <script src='https://unpkg.com/datacash'></script>
-
-  <script>
-    bitdb();
-  </script>
 
   <nav class="navbar navbar-inverse navbar-fixed-bottom">
     <div class="container-fluid" style='color: red;'>X|Y: <span id='coordinates'>0|0</span></div>
     <div class="container-fluid">
       <ul class="nav navbar-nav">
+        <button class="btn navbar-btn" style='background-color: rgb(255,255,255);' onclick='setColor(255,255,255)'></button>
+        <button class="btn navbar-btn" style='background-color: rgb(0,0,0);' onclick='setColor(0,0,0)'></button>
         <button class="btn navbar-btn" style='background-color: rgb(255,0,0);' onclick='setColor(255,0,0)'></button>
         <button class="btn navbar-btn" style='background-color: rgb(255,255,0);' onclick='setColor(255,255,0)'></button>
         <button class="btn navbar-btn" style='background-color: rgb(0,255,0);' onclick='setColor(0,255,0)'></button>
@@ -44,5 +42,12 @@
       </ul>
     </div>
   </nav>
+
+  <script src="js/index.js"></script>
+  <script>
+    bitdb();
+    bitsocket();
+  </script>
+  <script src='https://unpkg.com/datacash'></script>
 </body>
 </html>

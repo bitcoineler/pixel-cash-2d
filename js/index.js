@@ -1,12 +1,17 @@
+// Constants
+const BitindexApiURL = "https://api.bitindex.network/api/v1/utxos/";
+const DatacashRPC = "https://bchsvexplorer.com";
+const BitDbApi = "https://bitgraph.network/q/";
+const BitSocketApi = "https://bitsocket.org/s/";
+const BitDbApiKey = "qzudnqxkd9mplr003rnzr83qmapnyf09yynescajl0";
+const PrefixPixel = "0x8801";
+const RoundCapacity = 36; //max.36 pixels per tx op_return  pixel=(10b|10b|8b|8b|8b)
 const canvas = document.querySelector('#canvas');
 const ctx = canvas.getContext('2d');
 
+
 canvas.width = 1024;
 canvas.height = 1024;
-// ctx.strokeStyle = '#2196F3';
-// ctx.lineJoin = 'round';
-// ctx.lineCap = 'round';
-// ctx.lineWidth = 1;
 
 let drawingMode = false;
 let cX = 0; //X coordinate
@@ -22,6 +27,40 @@ function pad(num, size) {
     return s;
 }
 
+async function bitsocket(){
+  var query = {
+  "v": 3,
+  "q": {
+    "find": {
+      "out.h1": "8801"
+    }
+  },
+    "r": {
+      "f": "[.[] | .out[] | select(.b0.op? and .b0.op == 106) | {hexCode: .h2} ]"
+    }
+  };
+  var b64 = btoa(JSON.stringify(query));
+  var eventsource = "https://bitgraph.network/s/eyJ2IjozLCJxIjp7ImZpbmQiOnsib3V0LmgxIjoiODgwMSJ9fSwiciI6eyJmIjoiWy5bXSB8IC5vdXRbXSB8IHNlbGVjdCguYjAub3A/IGFuZCAuYjAub3AgPT0gMTA2KSB8IHtoZXhDb2RlOiAuaDJ9IF0ifX0=";
+  var bitsocket = new EventSource(eventsource)
+
+  bitsocket.onmessage = function(e) {
+    console.log(e.data);
+    let json = JSON.parse(e.data)
+    console.log(json);
+    if(json.type == 'mempool'){
+      var hexCode = json.data[0]['hexCode']
+      console.log("From Bitsocket mempool: ",hexCode)
+      var pixel = getXYRGB(hexCode);
+    } else if (json.type == 'block') {
+      for(tx in json.data){
+        var hexCode = json.data[tx]['hexCode']
+        console.log("From Bitsocket block "+json.index+": ",hexCode)
+        var pixel = getXYRGB(hexCode);
+      }
+    }
+  }
+};
+
 function bitdb(){
   var query = {
   "v": 3,
@@ -36,12 +75,12 @@ function bitdb(){
   };
 
   var b64 = btoa(JSON.stringify(query));
-  var url = "https://bitgraph.network/q/" + b64;
+  var url = BitDbApi + b64;
 
   console.log(url)
 
   var header = {
-    headers: { key: "qzudnqxkd9mplr003rnzr83qmapnyf09yynescajl0" }
+    headers: { key: BitDbApiKey }
   };
 
   fetch(url, header).then(function(r) {
@@ -64,22 +103,20 @@ function bitdb(){
     };
   });
 };
+
 function setColor(R,G,B){
   [color[0],color[1],color[2]] = [R,G,B]
-}
+};
 
 function getXYRGB(hexCode){
   var pixelSize = 12 //hex
   if (hexCode.length >= pixelSize){
-    // console.log("HexCodeLenght:",hexCode.length)
     var rounds = hexCode.length / pixelSize
-    // console.log("PixelRounds:",rounds)
 
     var startPos = 0
     for (count = 1; count <= rounds; count++){
       var endPos = startPos+pixelSize
       var pixel = hexCode.substring(startPos,endPos)
-      // console.log("Count:",count, "Slice:",hexCode.substring(startPos,endPos))
       startPos = endPos;
 
       var bin = pad(parseInt(pixel,16).toString(2),pixel.length*4)
@@ -89,7 +126,6 @@ function getXYRGB(hexCode){
         R = parseInt(bin.substring(24,32),2)
         G = parseInt(bin.substring(32,40),2)
         B = parseInt(bin.substring(40,48),2)
-        // console.log("Bin:",bin, " Hex:",pixel)
         setPixel(R,G,B,X,Y,false);
       }
     };
@@ -99,23 +135,22 @@ function getXYRGB(hexCode){
 function roundUp(num, precision) {
   precision = Math.pow(10, precision)
   return Math.ceil(num * precision) / precision
-}
+};
 
-// Enter a compressed private key here.
-let pkey = document.getElementById('pkey').value;
 // Async-await compatible timeout function
 let delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
 // An async-await style function that makes a single
 // datasend.call for the message supplied as the argument
 let sendOneTransaction = async function(oneMessage) {
   return new Promise(function(resolve, reject) {
+    let pkey = document.getElementById('pkey').value;
     console.log('Now sending message:', oneMessage);
-    // console.log('pkey:',pkey)
     datacash.send({
-      data: ["0x8801", "0x"+oneMessage],
+      data: [PrefixPixel, "0x"+oneMessage],
       cash: {
         key: pkey,
-        rpc: "https://bchsvexplorer.com"
+        rpc: DatacashRPC
       }
     }, function(errorMessage, transactionId) {
       if (errorMessage) {
@@ -130,17 +165,23 @@ let sendOneTransaction = async function(oneMessage) {
   })
 };
 
+
 async function send(pixelsToSend) {
+  let pkey = document.getElementById('pkey').value;
+  if(!pkey){
+    console.log('No Privatekey set')
+    return false
+  }
+
   console.log("tosend:",pixelsToSend)
 
-  var roundCapacity = 36
-
-  var rounds = roundUp(pixelsToSend.length / roundCapacity, 0)
+  var rounds = roundUp(pixelsToSend.length / RoundCapacity, 0)
   console.log("SendRounds:",rounds)
 
   var startPos = 0
   for (count = 1; count <= rounds; count++){
-    var endPos = startPos+roundCapacity
+    console.log("SendRound:",count)
+    var endPos = startPos+RoundCapacity
     var hexPayload = []
     var batch = pixelsToSend.slice(startPos,endPos)
     for (pixel in batch){
@@ -149,19 +190,20 @@ async function send(pixelsToSend) {
     }
 
     hexPayload = hexPayload.join("")
-    console.log("payload:",hexPayload)
 
     let txId;
     try {
       txId = await sendOneTransaction(hexPayload);
+      console.log("try send tx!!!!!!",hexPayload)
     }
     catch(error) {
       console.log('There was an error in sending',hexPayload,':',error);
     }
-    // Wait three seconds in between messages
-    await delay(1000);
+    // Wait 1 second in between messages
+    // await delay(100);
     startPos = endPos;
-  }
+  };
+  let pixelDict = {};
 };
 
 function pixelArrayToBin(input){
@@ -179,22 +221,22 @@ function pixelArrayToBin(input){
   return binCoordinates
 }
 
-function binToPixelArray(input){
-  console.log("binToPixelArray: ",input)
-  pixelArray = {}
-  for (binCoordinate in input){
-    binPixel = input[binCoordinate]
-    Y = parseInt(binPixel.substring(0,10),2)
-    X = parseInt(binPixel.substring(10,20),2)
-    R = parseInt(binPixel.substring(20,28),2)
-    G = parseInt(binPixel.substring(28,36),2)
-    B = parseInt(binPixel.substring(36,44),2)
-
-    coordinate = Y+"|"+X
-    pixelDict[coordinate] = [R,G,B]
-  }
-  return pixelArray
-}
+// function binToPixelArray(input){
+//   console.log("binToPixelArray: ",input)
+//   pixelArray = {}
+//   for (binCoordinate in input){
+//     binPixel = input[binCoordinate]
+//     Y = parseInt(binPixel.substring(0,10),2)
+//     X = parseInt(binPixel.substring(10,20),2)
+//     R = parseInt(binPixel.substring(20,28),2)
+//     G = parseInt(binPixel.substring(28,36),2)
+//     B = parseInt(binPixel.substring(36,44),2)
+//
+//     coordinate = Y+"|"+X
+//     pixelDict[coordinate] = [R,G,B]
+//   }
+//   return pixelArray
+// }
 
 function loadPixels(pixels){
  for (coordinate in pixels){
@@ -212,10 +254,7 @@ function keyPressed(e){
   var keyCode = e.which || e.keyCode;
   if(keyCode === 90){
     console.log("Pressed 'z' => Save to Local Storage")
-    // toLocalStorage();
-    var pixelsToSend = pixelArrayToBin(pixelDict)
-    console.log(pixelsToSend);
-    send(pixelsToSend);
+    send(pixelArrayToBin(pixelDict));
   }
 }
 
@@ -234,11 +273,9 @@ function draw(e) {
     if (!drawingMode) return;
     setPixel(color[0],color[1],color[2],cX,cY,true);
 
-    // ctx.strokeStyle = `hsl(${changingColor}, 100%, 50%)`;
     // ctx.beginPath();
     // console.log("=>",cX,cY)
     // ctx.moveTo(cX, cY);
-    // console.log("--",e.offsetX,e.offsetY)
     // ctx.lineTo(e.offsetX, e.offsetY);
     // ctx.stroke();
 }
