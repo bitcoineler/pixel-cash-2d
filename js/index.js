@@ -27,6 +27,18 @@ function pad(num, size) {
     return s;
 }
 
+function getBalance(address){
+    var address = "qpy3cc67n3j9rpr8c3yx3lv0qc9k2kmfyud9e485w2";
+    var url = BitindexApiURL +address;
+    fetch(url).then(function(r) {
+      return r.json()
+    }).then(function(r) {
+      console.log(r)
+      document.getElementById("balance").innerHTML = r.data.balance + " satoshis";
+    })
+}
+
+
 async function bitsocket(){
   var query = {
   "v": 3,
@@ -40,11 +52,10 @@ async function bitsocket(){
     }
   };
   var b64 = btoa(JSON.stringify(query));
-  var eventsource = "https://bitgraph.network/s/eyJ2IjozLCJxIjp7ImZpbmQiOnsib3V0LmgxIjoiODgwMSJ9fSwiciI6eyJmIjoiWy5bXSB8IC5vdXRbXSB8IHNlbGVjdCguYjAub3A/IGFuZCAuYjAub3AgPT0gMTA2KSB8IHtoZXhDb2RlOiAuaDJ9IF0ifX0=";
+  var eventsource = "https://bitgraph.network/s/"+b64
   var bitsocket = new EventSource(eventsource)
 
   bitsocket.onmessage = function(e) {
-    console.log(e.data);
     let json = JSON.parse(e.data)
     console.log(json);
     if(json.type == 'mempool'){
@@ -54,7 +65,7 @@ async function bitsocket(){
     } else if (json.type == 'block') {
       for(tx in json.data){
         var hexCode = json.data[tx]['hexCode']
-        console.log("From Bitsocket block "+json.index+": ",hexCode)
+        console.log("From Bitsocket block "+json.index+": ",tx, hexCode)
         var pixel = getXYRGB(hexCode);
       }
     }
@@ -67,7 +78,8 @@ function bitdb(){
   "q": {
     "find": {
       "out.h1": "8801"
-    }
+    },
+    "limit": 100000
   },
     "r": {
       "f": "[.[] | .out[] | select(.b0.op? and .b0.op == 106) | {hexCode: .h2} ]"

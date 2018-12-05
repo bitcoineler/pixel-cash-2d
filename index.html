@@ -28,7 +28,7 @@
   </div>
 
   <nav class="navbar navbar-inverse navbar-fixed-bottom">
-    <div class="container-fluid" style='color: red;'>X|Y: <span id='coordinates'>0|0</span></div>
+    <div class="container-fluid" style='color: red;'>Balance: <span id='balance'>0</span>  >> X|Y: <span id='coordinates'>0|0</span></div>
     <div class="container-fluid">
       <ul class="nav navbar-nav">
         <button class="btn navbar-btn" style='background-color: rgb(255,255,255);' onclick='setColor(255,255,255)'></button>
@@ -47,6 +47,7 @@
   <script>
     bitdb();
     bitsocket();
+    getBalance();
   </script>
   <script src='https://unpkg.com/datacash'></script>
 </body>
