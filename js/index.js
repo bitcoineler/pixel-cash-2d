@@ -1,17 +1,19 @@
 // Constants
 const BitindexApiURL = "https://api.bitindex.network/api/v1/utxos/";
-const DatacashRPC = "https://bchsvexplorer.com";
-const BitDbApi = "https://bitgraph.network/q/";
-const BitSocketApi = "https://bitsocket.org/s/";
+// const DatacashRPC = "https://bchsvexplorer.com";
+const BitDbApi = "https://babel.bitdb.network/q/1DHDifPvtPgKFPZMRSxmVHhiPvFmxZwbfh/";
+const BitSocketApi = "https://babel.bitdb.network/s/1DHDifPvtPgKFPZMRSxmVHhiPvFmxZwbfh/";
 const BitDbApiKey = "qzudnqxkd9mplr003rnzr83qmapnyf09yynescajl0";
 const PrefixPixel = "0x8801";
-const RoundCapacity = 36; //max.36 pixels per tx op_return  pixel=(10b|10b|8b|8b|8b)
+const RoundCapacity = 18100; //max.18100 pixels per tx op_return 99994bytes pixel=(10b|10b|8b|8b|8b)
 const canvas = document.querySelector('#canvas');
 const ctx = canvas.getContext('2d');
 
-
 canvas.width = 1024;
 canvas.height = 1024;
+
+ctx.fillStyle = "white";
+ctx.fillRect(0, 0, canvas.width, canvas.height);
 
 let drawingMode = false;
 let cX = 0; //X coordinate
@@ -20,6 +22,7 @@ let changingColor = 0; //color variable responsible for changing color
 let direction = true; //changes the size of the brush
 let pixelDict = {}
 let color = {}
+
 
 function pad(num, size) {
     var s = num+"";
@@ -47,12 +50,12 @@ async function bitsocket(){
       "out.h1": "8801"
     }
   },
-    "r": {
-      "f": "[.[] | .out[] | select(.b0.op? and .b0.op == 106) | {hexCode: .h2} ]"
-    }
+  "r": {
+    "f": "[.[] | .out[] | select(.b0.op? and .b0.op == 106) | {hexCode: (if .h2 then .h2 else .lh2 end)} ]"
+  }
   };
   var b64 = btoa(JSON.stringify(query));
-  var eventsource = "https://bitgraph.network/s/"+b64
+  var eventsource = BitSocketApi+b64
   var bitsocket = new EventSource(eventsource)
 
   bitsocket.onmessage = function(e) {
@@ -82,7 +85,7 @@ function bitdb(){
     "limit": 100000
   },
     "r": {
-      "f": "[.[] | .out[] | select(.b0.op? and .b0.op == 106) | {hexCode: .h2} ]"
+      "f": "[.[] | .out[] | select(.b0.op? and .b0.op == 106) | {hexCode: (if .h2 then .h2 else .lh2 end)} ]"
     }
   };
 
@@ -98,7 +101,7 @@ function bitdb(){
   fetch(url, header).then(function(r) {
     return r.json()
   }).then(function(r) {
-    console.log(r);
+    console.log("data:::",r);
 
     if(r['c'].length != 0){
       for(i in r['c']){
@@ -158,13 +161,14 @@ let sendOneTransaction = async function(oneMessage) {
   return new Promise(function(resolve, reject) {
     let pkey = document.getElementById('pkey').value;
     console.log('Now sending message:', oneMessage);
-    datacash.send({
+    let tx = {
       data: [PrefixPixel, "0x"+oneMessage],
-      cash: {
-        key: pkey,
-        rpc: DatacashRPC
+      pay: {
+        key: pkey
       }
-    }, function(errorMessage, transactionId) {
+    };
+
+    datapay.send(tx, function(errorMessage, transactionId) {
       if (errorMessage) {
         console.log('Error sending message', oneMessage, ':', errorMessage);
         return reject(errorMessage);

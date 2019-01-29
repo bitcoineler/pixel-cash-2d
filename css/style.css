@@ -2,9 +2,9 @@ html, body {
     margin: 0;
     padding: 0;
 }
-#canvas {
+/* #canvas {
     background: #F2F2F2;
-}
+} */
 
 #canvas-container {
     background: #650404;
