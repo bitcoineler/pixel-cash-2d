@@ -1,6 +1,5 @@
 // Constants
 const BitindexApiURL = "https://api.bitindex.network/api/v1/utxos/";
-// const DatacashRPC = "https://bchsvexplorer.com";
 const BitDbApi = "https://babel.bitdb.network/q/1DHDifPvtPgKFPZMRSxmVHhiPvFmxZwbfh/";
 const BitSocketApi = "https://babel.bitdb.network/s/1DHDifPvtPgKFPZMRSxmVHhiPvFmxZwbfh/";
 const BitDbApiKey = "qzudnqxkd9mplr003rnzr83qmapnyf09yynescajl0";
