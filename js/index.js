@@ -8,22 +8,94 @@ const RoundCapacity = 18100; //max.18100 pixels per tx op_return 99994bytes pixe
 const canvas = document.querySelector('#canvas');
 const ctx = canvas.getContext('2d');
 
-var drawboard = ""
+var drawingboard = ""
 var addresses = []
 var mode = 2 // 1 => only from []addresses  2 => from any
 
 if(window.location.hash) {
-  drawboard = window.location.hash.slice(1);
+  drawingboard = window.location.hash.slice(1);
 }else{
-  drawboard = 'all';
+  drawingboard = 'all';
 }
 
-document.getElementById("drawboard").innerHTML = "drawboard: " + drawboard;
+var BitSocketQuery = ""
+const BitSocketQuery_1 = {
+"v": 3,
+"q": {
+  "find": {
+    "out.h1": "8801",
+    "out.s2": `${drawingboard}`
+  }
+},
+"r": {
+  "f": "[.[] | .out[] | select(.b0.op? and .b0.op == 106) | {hexCode: (if .h3 then .h3 else .lh3 end)} ]"
+  }
+};
+
+const BitSocketQuery_2 = {
+"v": 3,
+"q": {
+  "find": {
+    "out.h1": "8801",
+    "out.s2": `${drawingboard}`,
+    "in.e.a": {
+      "$in": addresses
+     }
+  }
+},
+"r": {
+  "f": "[.[] | .out[] | select(.b0.op? and .b0.op == 106) | {hexCode: (if .h3 then .h3 else .lh3 end)} ]"
+  }
+};
+
+var BitDbQuery = ""
+const BitDbQuery_1 = {
+"v": 3,
+"q": {
+  "find": {
+    "out.h1": "8801",
+    "out.s2": `${drawingboard}`
+  },
+  "limit": 100000
+},
+  "r": {
+    "f": "[.[] | .out[] | select(.b0.op? and .b0.op == 106) | {hexCode: (if .h3 then .h3 else .lh3 end)} ]"
+  }
+};
+const BitDbQuery_2 = {
+"v": 3,
+"q": {
+  "find": {
+    "out.h1": "8801",
+    "out.s2": `${drawingboard}`,
+    "in.e.a": {
+      "$in": addresses
+     }
+  },
+  "limit": 100000
+},
+  "r": {
+    "f": "[.[] | .out[] | select(.b0.op? and .b0.op == 106) | {hexCode: (if .h3 then .h3 else .lh3 end)} ]"
+  }
+};
+
+if(mode == 2){
+  BitDbQuery = BitDbQuery_1
+  BitSocketQuery = BitSocketQuery_1
+}else{
+  BitDbQuery = BitDbQuery_2
+  BitSocketQuery = BitSocketQuery_2
+}
+
+
+
+
+document.getElementById("drawingboard").innerHTML = "Drawing board: " + drawingboard;
 if(mode==1){
-  addresses.push(drawboard)
+  addresses.push(drawingboard)
 }
 
-console.log(drawboard,mode,addresses)
+console.log(drawingboard,mode,addresses)
 
 canvas.width = 1024;
 canvas.height = 1024;
@@ -59,33 +131,18 @@ function getBalance(address){
 
 
 async function bitsocket(){
-  var query = {
-  "v": 3,
-  "q": {
-    "find": {
-      "out.h1": "8801",
-      "out.s2": `${drawboard}`,
-      "in.e.a": {
-        "$in": addresses
-       }
-    }
-  },
-  "r": {
-    "f": "[.[] | .out[] | select(.b0.op? and .b0.op == 106) | {hexCode: (if .h3 then .h3 else .lh3 end)} ]"
-  }
-  };
-  var b64 = btoa(JSON.stringify(query));
+  var b64 = btoa(JSON.stringify(BitSocketQuery));
   var eventsource = BitSocketApi+b64
   var bitsocket = new EventSource(eventsource)
 
   bitsocket.onmessage = function(e) {
     let json = JSON.parse(e.data)
-    console.log(json);
-    if(json.type == 'mempool'){
+    console.log("Bitsocket:",json);
+    if(json.type == 'u'){
       var hexCode = json.data[0]['hexCode']
       console.log("From Bitsocket mempool: ",hexCode)
       var pixel = getXYRGB(hexCode);
-    } else if (json.type == 'block') {
+    } else if (json.type == 'c') {
       for(tx in json.data){
         var hexCode = json.data[tx]['hexCode']
         console.log("From Bitsocket block "+json.index+": ",tx, hexCode)
@@ -96,44 +153,9 @@ async function bitsocket(){
 };
 
 function bitdb(){
-  var query1 = {
-  "v": 3,
-  "q": {
-    "find": {
-      "out.h1": "8801",
-      "out.s2": `${drawboard}`
-    },
-    "limit": 100000
-  },
-    "r": {
-      "f": "[.[] | .out[] | select(.b0.op? and .b0.op == 106) | {hexCode: (if .h3 then .h3 else .lh3 end)} ]"
-    }
-  };
-  var query2 = {
-  "v": 3,
-  "q": {
-    "find": {
-      "out.h1": "8801",
-      "out.s2": `${drawboard}`,
-      "in.e.a": {
-        "$in": addresses
-       }
-    },
-    "limit": 100000
-  },
-    "r": {
-      "f": "[.[] | .out[] | select(.b0.op? and .b0.op == 106) | {hexCode: (if .h3 then .h3 else .lh3 end)} ]"
-    }
-  };
+  console.log(BitDbQuery)
 
-  if(mode == 2){
-    query = query1
-  }else{
-    query = query2
-  }
-  console.log(query)
-
-  var b64 = btoa(JSON.stringify(query));
+  var b64 = btoa(JSON.stringify(BitDbQuery));
   var url = BitDbApi + b64;
 
   console.log(url)
@@ -202,7 +224,7 @@ let sendOneTransaction = async function(oneMessage) {
     let pkey = document.getElementById('pkey').value;
     console.log('Now sending message:', oneMessage);
     let tx = {
-      data: [PrefixPixel, drawboard, "0x"+oneMessage],
+      data: [PrefixPixel, drawingboard, "0x"+oneMessage],
       pay: {
         key: pkey
       }
