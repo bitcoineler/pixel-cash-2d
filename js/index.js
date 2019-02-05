@@ -8,6 +8,23 @@ const RoundCapacity = 18100; //max.18100 pixels per tx op_return 99994bytes pixe
 const canvas = document.querySelector('#canvas');
 const ctx = canvas.getContext('2d');
 
+var drawboard = ""
+var addresses = []
+var mode = 2 // 1 => only from []addresses  2 => from any
+
+if(window.location.hash) {
+  drawboard = window.location.hash.slice(1);
+}else{
+  drawboard = 'all';
+}
+
+document.getElementById("drawboard").innerHTML = "drawboard: " + drawboard;
+if(mode==1){
+  addresses.push(drawboard)
+}
+
+console.log(drawboard,mode,addresses)
+
 canvas.width = 1024;
 canvas.height = 1024;
 
@@ -46,11 +63,15 @@ async function bitsocket(){
   "v": 3,
   "q": {
     "find": {
-      "out.h1": "8801"
+      "out.h1": "8801",
+      "out.s2": `${drawboard}`,
+      "in.e.a": {
+        "$in": addresses
+       }
     }
   },
   "r": {
-    "f": "[.[] | .out[] | select(.b0.op? and .b0.op == 106) | {hexCode: (if .h2 then .h2 else .lh2 end)} ]"
+    "f": "[.[] | .out[] | select(.b0.op? and .b0.op == 106) | {hexCode: (if .h3 then .h3 else .lh3 end)} ]"
   }
   };
   var b64 = btoa(JSON.stringify(query));
@@ -75,18 +96,42 @@ async function bitsocket(){
 };
 
 function bitdb(){
-  var query = {
+  var query1 = {
   "v": 3,
   "q": {
     "find": {
-      "out.h1": "8801"
+      "out.h1": "8801",
+      "out.s2": `${drawboard}`
     },
     "limit": 100000
   },
     "r": {
-      "f": "[.[] | .out[] | select(.b0.op? and .b0.op == 106) | {hexCode: (if .h2 then .h2 else .lh2 end)} ]"
+      "f": "[.[] | .out[] | select(.b0.op? and .b0.op == 106) | {hexCode: (if .h3 then .h3 else .lh3 end)} ]"
     }
   };
+  var query2 = {
+  "v": 3,
+  "q": {
+    "find": {
+      "out.h1": "8801",
+      "out.s2": `${drawboard}`,
+      "in.e.a": {
+        "$in": addresses
+       }
+    },
+    "limit": 100000
+  },
+    "r": {
+      "f": "[.[] | .out[] | select(.b0.op? and .b0.op == 106) | {hexCode: (if .h3 then .h3 else .lh3 end)} ]"
+    }
+  };
+
+  if(mode == 2){
+    query = query1
+  }else{
+    query = query2
+  }
+  console.log(query)
 
   var b64 = btoa(JSON.stringify(query));
   var url = BitDbApi + b64;
@@ -151,22 +196,18 @@ function roundUp(num, precision) {
   return Math.ceil(num * precision) / precision
 };
 
-// Async-await compatible timeout function
 let delay = ms => new Promise(resolve => setTimeout(resolve, ms));
-
-// An async-await style function that makes a single
-// datasend.call for the message supplied as the argument
 let sendOneTransaction = async function(oneMessage) {
   return new Promise(function(resolve, reject) {
     let pkey = document.getElementById('pkey').value;
     console.log('Now sending message:', oneMessage);
     let tx = {
-      data: [PrefixPixel, "0x"+oneMessage],
+      data: [PrefixPixel, drawboard, "0x"+oneMessage],
       pay: {
         key: pkey
       }
     };
-
+    console.log(tx)
     datapay.send(tx, function(errorMessage, transactionId) {
       if (errorMessage) {
         console.log('Error sending message', oneMessage, ':', errorMessage);
@@ -214,8 +255,6 @@ async function send(pixelsToSend) {
     catch(error) {
       console.log('There was an error in sending',hexPayload,':',error);
     }
-    // Wait 1 second in between messages
-    // await delay(100);
     startPos = endPos;
   };
   let pixelDict = {};
