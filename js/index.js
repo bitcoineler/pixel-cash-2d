@@ -363,26 +363,35 @@ function draw(e) {
 }
 
 function setPixel(r,g,b,cX,cY,isNew){
-  var imagedata = ctx.createImageData(size,size);
-  var pos = 0
-  for (i = 0; i < size**2; i++){
-    imagedata.data[pos] = r;
-    imagedata.data[pos+1] = g;
-    imagedata.data[pos+2] = b;
-    imagedata.data[pos+3] = 255;
-    pos = pos + 4
+  var imagedata
+  if(isNew){
+    imagedata = ctx.createImageData(size,size);
+    var pos = 0
+    for (i = 0; i < size**2; i++){
+      imagedata.data[pos] = r;
+      imagedata.data[pos+1] = g;
+      imagedata.data[pos+2] = b;
+      imagedata.data[pos+3] = 255;
+      pos = pos + 4
+    }
+  }else{
+    imagedata = ctx.createImageData(1,1);
+    imagedata.data[0] = r;
+    imagedata.data[1] = g;
+    imagedata.data[2] = b;
+    imagedata.data[3] = 255;
   }
 
   ctx.putImageData(imagedata, cX, cY);
 
   if (isNew){
     for (i = 0; i < size; i++){
-      ++cY
       for (a = 0; a < size; a++){
-        ++cX
         coordinate = cY+"|"+cX
         pixelDict[coordinate] = [imagedata.data[0],imagedata.data[1],imagedata.data[2]]
+        ++cX
       }
+      ++cY
       cX = cX - size
     }
   }
