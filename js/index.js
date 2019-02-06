@@ -8,6 +8,7 @@ const RoundCapacity = 18100; //max.18100 pixels per tx op_return 99994bytes pixe
 const canvas = document.querySelector('#canvas');
 const ctx = canvas.getContext('2d');
 
+var size = 5;
 var drawingboard = ""
 var addresses = []
 var mode = 2 // 1 => only from []addresses  2 => from any
@@ -111,6 +112,10 @@ let direction = true; //changes the size of the brush
 let pixelDict = {}
 let color = {}
 
+
+function sliderupdate(e){
+  size = parseInt(e.value);
+}
 
 function pad(num, size) {
     var s = num+"";
@@ -226,7 +231,8 @@ let sendOneTransaction = async function(oneMessage) {
     let tx = {
       data: [PrefixPixel, drawingboard, "0x"+oneMessage],
       pay: {
-        key: pkey
+        key: pkey,
+        rpc: "https://api.bitindex.network"
       }
     };
     console.log(tx)
@@ -357,18 +363,32 @@ function draw(e) {
 }
 
 function setPixel(r,g,b,cX,cY,isNew){
-  var imagedata = ctx.createImageData(1,1);
+  // var imagedata = ctx.createImageData(1,1);
+  var imagedata = ctx.createImageData(size,size);
 
-  imagedata.data[0] = r;
-  imagedata.data[1] = g;
-  imagedata.data[2] = b;
-  imagedata.data[3] = 255;
+  var pos = 0
+  for (i = 0; i < size**2; i++){
+    imagedata.data[pos] = r;
+    imagedata.data[pos+1] = g;
+    imagedata.data[pos+2] = b;
+    imagedata.data[pos+3] = 255;
+    pos = pos + 4
+  }
 
   ctx.putImageData(imagedata, cX, cY);
   // console.log("SetPixel:","X:",cX,"Y:",cY,imagedata)
-  coordinate = cY+"|"+cX
+
   if (isNew){
-    pixelDict[coordinate] = [imagedata.data[0],imagedata.data[1],imagedata.data[2]]
+    for (i = 0; i < size; i++){
+      ++cY
+      for (a = 0; a < size; a++){
+        ++cX
+        coordinate = cY+"|"+cX
+        pixelDict[coordinate] = [imagedata.data[0],imagedata.data[1],imagedata.data[2]]
+      }
+      cX = cX - size
+    }
+    // pixelDict[coordinate] = [imagedata.data[0],imagedata.data[1],imagedata.data[2]]
   }
 }
 
