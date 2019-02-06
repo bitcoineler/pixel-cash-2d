@@ -144,7 +144,7 @@ async function bitsocket(){
       var pixel = getXYRGB(hexCode);
     } else if (json.type == 'c') {
       for(tx in json.data){
-        var hexCode = json.data[tx]['hexCode']
+        var hexCode = json.data[tx][0]['hexCode']
         console.log("From Bitsocket block "+json.index+": ",tx, hexCode)
         var pixel = getXYRGB(hexCode);
       }
