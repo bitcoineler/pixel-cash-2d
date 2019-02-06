@@ -3,8 +3,12 @@ const BitindexApiURL = "https://api.bitindex.network/api/v1/utxos/";
 const BitDbApi = "https://babel.bitdb.network/q/1DHDifPvtPgKFPZMRSxmVHhiPvFmxZwbfh/";
 const BitSocketApi = "https://babel.bitdb.network/s/1DHDifPvtPgKFPZMRSxmVHhiPvFmxZwbfh/";
 const BitDbApiKey = "qzudnqxkd9mplr003rnzr83qmapnyf09yynescajl0";
-const PrefixPixel = "0x8801";
-const RoundCapacity = 18100; //max.18100 pixels per tx op_return 99994bytes pixel=(10b|10b|8b|8b|8b)
+const BitcomProtocol = "1BGUipRWPj63awCM2z5FkLJBWvg5iMf3uF";
+const ColorDepth = "0x18" //24bit RGB
+const MapSizeX = "0x01"  //10bit X
+const MapSizeY = "0x01"  //10bit Y
+// const PrefixPixel = "0x8801";
+const RoundCapacity = 16655; //max.18100 pixels per tx op_return 99994bytes pixel=(10b|10b|8b|8b|8b)
 const canvas = document.querySelector('#canvas');
 const ctx = canvas.getContext('2d');
 
@@ -24,8 +28,8 @@ const BitSocketQuery_1 = {
 "v": 3,
 "q": {
   "find": {
-    "out.h1": "8801",
-    "out.s2": `${drawingboard}`
+    "out.h1": `${BitcomProtocol}`,
+    "out.s5": `${drawingboard}`
   }
 },
 "r": {
@@ -37,8 +41,8 @@ const BitSocketQuery_2 = {
 "v": 3,
 "q": {
   "find": {
-    "out.h1": "8801",
-    "out.s2": `${drawingboard}`,
+    "out.h1": `${BitcomProtocol}`,
+    "out.s5": `${drawingboard}`,
     "in.e.a": {
       "$in": addresses
      }
@@ -54,8 +58,8 @@ const BitDbQuery_1 = {
 "v": 3,
 "q": {
   "find": {
-    "out.h1": "8801",
-    "out.s2": `${drawingboard}`
+    "out.h1": `${BitcomProtocol}`,
+    "out.s5": `${drawingboard}`
   },
   "limit": 100000
 },
@@ -67,8 +71,8 @@ const BitDbQuery_2 = {
 "v": 3,
 "q": {
   "find": {
-    "out.h1": "8801",
-    "out.s2": `${drawingboard}`,
+    "out.h1": `${BitcomProtocol}`,
+    "out.s5": `${drawingboard}`,
     "in.e.a": {
       "$in": addresses
      }
@@ -229,7 +233,7 @@ let sendOneTransaction = async function(oneMessage) {
     let pkey = document.getElementById('pkey').value;
     console.log('Now sending message:', oneMessage);
     let tx = {
-      data: [PrefixPixel, drawingboard, "0x"+oneMessage],
+      data: [BitcomProtocol,ColorDepth,MapSizeX,MapSizeY,drawingboard,"0x"+oneMessage],
       pay: {
         key: pkey,
         rpc: "https://api.bitindex.network"
@@ -288,6 +292,7 @@ async function send(pixelsToSend) {
   let pixelDict = {};
 };
 
+// todo: pad noetig??  
 function pixelArrayToBin(input){
   console.log("pixelArrayToBin: ",input)
   binCoordinates = []
