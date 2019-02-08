@@ -12,7 +12,7 @@ const RoundCapacity = 16655; //max.18100 pixels per tx op_return 99994bytes pixe
 const canvas = document.querySelector('#canvas');
 const ctx = canvas.getContext('2d');
 
-var size = 5;
+var size = 4;
 var drawingboard = ""
 var addresses = []
 var mode = 2 // 1 => only from []addresses  2 => from any
@@ -107,6 +107,11 @@ canvas.height = 1024;
 
 ctx.fillStyle = "white";
 ctx.fillRect(0, 0, canvas.width, canvas.height);
+ctx.strokeStyle = '#2196F3';
+ctx.lineJoin = 'round';
+ctx.lineCap = 'round';
+ctx.lineWidth = size;
+
 
 let drawingMode = false;
 let cX = 0; //X coordinate
@@ -292,7 +297,7 @@ async function send(pixelsToSend) {
   let pixelDict = {};
 };
 
-// todo: pad noetig??  
+// todo: pad noetig??
 function pixelArrayToBin(input){
   console.log("pixelArrayToBin: ",input)
   binCoordinates = []
@@ -342,6 +347,7 @@ function keyPressed(e){
   if(keyCode === 90){
     console.log("Pressed 'z' => Save to Local Storage")
     send(pixelArrayToBin(pixelDict));
+    // console.log(ctx.getImageData(0, 0, canvas.width, canvas.height));
   }
 }
 
@@ -360,9 +366,7 @@ function draw(e) {
     if (!drawingMode) return;
     setPixel(color[0],color[1],color[2],cX,cY,true);
 
-    // ctx.beginPath();
-    // console.log("=>",cX,cY)
-    // ctx.moveTo(cX, cY);
+
     // ctx.lineTo(e.offsetX, e.offsetY);
     // ctx.stroke();
 }
@@ -407,7 +411,9 @@ canvas.addEventListener('click', click);
 canvas.addEventListener('mousemove', draw);
 canvas.addEventListener('mousedown', (e) => {
     drawingMode = true;
-    [cX, cY] = [e.offsetX, e.offsetY];
+    // [cX, cY] = [e.offsetX, e.offsetY];
+    // ctx.beginPath();
+    // ctx.moveTo(cX, cY);
 });
 canvas.addEventListener('mouseup', () => drawingMode = false);
 canvas.addEventListener('mouseout', () => drawingMode = false);
