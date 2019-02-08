@@ -23,7 +23,7 @@
       </form>
       <p id="drawingboard" class="navbar-text"></p>
       <label class="switch navbar-text">
-        <input type="checkbox" onclick="modus()" checked>
+        <input type="checkbox" onclick="switchMode(this);" checked>
         <span class="slider"></span>
       </label>
 
@@ -52,13 +52,6 @@
   </nav>
   <script src="js/jscolor.js"></script>
   <script src="js/index.js"></script>
-  <script>
-    bitdb();
-    bitsocket();
-    getBalance();
-  </script>
-
-
   <script src='https://unpkg.com/datapay'></script>
 </body>
 </html>

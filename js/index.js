@@ -15,7 +15,13 @@ const ctx = canvas.getContext('2d');
 var size = 4;
 var drawingboard = ""
 var addresses = []
-var mode = 2 // 1 => only from []addresses  2 => from any
+
+var mode // 1 => only from []addresses  2 => from any
+if(localStorage['mode']){
+  mode = localStorage['mode'];
+}else{
+  mode = 2
+}
 
 if(window.location.hash) {
   drawingboard = window.location.hash.slice(1);
@@ -84,16 +90,6 @@ const BitDbQuery_2 = {
   }
 };
 
-if(mode == 2){
-  BitDbQuery = BitDbQuery_1
-  BitSocketQuery = BitSocketQuery_1
-}else{
-  BitDbQuery = BitDbQuery_2
-  BitSocketQuery = BitSocketQuery_2
-}
-
-
-
 
 document.getElementById("drawingboard").innerHTML = "Drawing board: " + drawingboard;
 if(mode==1){
@@ -142,7 +138,6 @@ function getBalance(address){
       document.getElementById("balance").innerHTML = r.data.balance + " satoshis";
     })
 }
-
 
 async function bitsocket(){
   var b64 = btoa(JSON.stringify(BitSocketQuery));
@@ -198,6 +193,31 @@ function bitdb(){
     };
   });
 };
+
+function switchMode(e){
+  location.reload();
+
+  if(e.checked){
+    localStorage['mode'] = 1;
+  }else{
+    localStorage['mode'] = 2;
+  }
+}
+
+function load(){
+  console.log("mode: ",mode)
+  if(mode == 2){
+    BitDbQuery = BitDbQuery_1
+    BitSocketQuery = BitSocketQuery_1
+  }else{
+    BitDbQuery = BitDbQuery_2
+    BitSocketQuery = BitSocketQuery_2
+  }
+  bitdb();
+  bitsocket();
+  getBalance();
+}
+
 
 function setColor(R,G,B){
   [color[0],color[1],color[2]] = [R,G,B]
@@ -417,3 +437,7 @@ canvas.addEventListener('mousedown', (e) => {
 });
 canvas.addEventListener('mouseup', () => drawingMode = false);
 canvas.addEventListener('mouseout', () => drawingMode = false);
+
+window.onload = function() {
+  load();
+}
