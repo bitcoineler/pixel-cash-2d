@@ -107,10 +107,10 @@ canvas.height = 1024;
 
 ctx.fillStyle = "white";
 ctx.fillRect(0, 0, canvas.width, canvas.height);
-ctx.strokeStyle = '#2196F3';
-ctx.lineJoin = 'round';
-ctx.lineCap = 'round';
-ctx.lineWidth = size;
+// ctx.strokeStyle = '#2196F3';
+// ctx.lineJoin = 'round';
+// ctx.lineCap = 'round';
+// ctx.lineWidth = size;
 
 
 let drawingMode = false;
