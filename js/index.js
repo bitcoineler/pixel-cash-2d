@@ -19,8 +19,9 @@ var addresses = []
 var mode // 1 => only from []addresses  2 => from any
 if(localStorage['mode']){
   mode = localStorage['mode'];
+  document.getElementById('mode').checked = mode;
 }else{
-  mode = 2
+  mode = false
 }
 
 if(window.location.hash) {
@@ -92,7 +93,7 @@ const BitDbQuery_2 = {
 
 
 document.getElementById("drawingboard").innerHTML = "Drawing board: " + drawingboard;
-if(mode==1){
+if(mode==true){
   addresses.push(drawingboard)
 }
 
@@ -198,15 +199,15 @@ function switchMode(e){
   location.reload();
 
   if(e.checked){
-    localStorage['mode'] = 1;
+    localStorage['mode'] = true;
   }else{
-    localStorage['mode'] = 2;
+    localStorage['mode'] = false;
   }
 }
 
 function load(){
   console.log("mode: ",mode)
-  if(mode == 2){
+  if(mode == false){
     BitDbQuery = BitDbQuery_1
     BitSocketQuery = BitSocketQuery_1
   }else{
