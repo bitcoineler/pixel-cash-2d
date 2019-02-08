@@ -28,12 +28,12 @@ const BitSocketQuery_1 = {
 "v": 3,
 "q": {
   "find": {
-    "out.h1": `${BitcomProtocol}`,
+    "out.s1": `${BitcomProtocol}`,
     "out.s5": `${drawingboard}`
   }
 },
 "r": {
-  "f": "[.[] | .out[] | select(.b0.op? and .b0.op == 106) | {hexCode: (if .h3 then .h3 else .lh3 end)} ]"
+  "f": "[.[] | .out[] | select(.b0.op? and .b0.op == 106) | {hexCode: (if .h6 then .h6 else .lh6 end)} ]"
   }
 };
 
@@ -41,7 +41,7 @@ const BitSocketQuery_2 = {
 "v": 3,
 "q": {
   "find": {
-    "out.h1": `${BitcomProtocol}`,
+    "out.s1": `${BitcomProtocol}`,
     "out.s5": `${drawingboard}`,
     "in.e.a": {
       "$in": addresses
@@ -49,7 +49,7 @@ const BitSocketQuery_2 = {
   }
 },
 "r": {
-  "f": "[.[] | .out[] | select(.b0.op? and .b0.op == 106) | {hexCode: (if .h3 then .h3 else .lh3 end)} ]"
+  "f": "[.[] | .out[] | select(.b0.op? and .b0.op == 106) | {hexCode: (if .h6 then .h6 else .lh6 end)} ]"
   }
 };
 
@@ -58,20 +58,20 @@ const BitDbQuery_1 = {
 "v": 3,
 "q": {
   "find": {
-    "out.h1": `${BitcomProtocol}`,
+    "out.s1": `${BitcomProtocol}`,
     "out.s5": `${drawingboard}`
   },
   "limit": 100000
 },
   "r": {
-    "f": "[.[] | .out[] | select(.b0.op? and .b0.op == 106) | {hexCode: (if .h3 then .h3 else .lh3 end)} ]"
+    "f": "[.[] | .out[] | select(.b0.op? and .b0.op == 106) | {hexCode: (if .h6 then .h6 else .lh6 end)} ]"
   }
 };
 const BitDbQuery_2 = {
 "v": 3,
 "q": {
   "find": {
-    "out.h1": `${BitcomProtocol}`,
+    "out.s1": `${BitcomProtocol}`,
     "out.s5": `${drawingboard}`,
     "in.e.a": {
       "$in": addresses
@@ -80,7 +80,7 @@ const BitDbQuery_2 = {
   "limit": 100000
 },
   "r": {
-    "f": "[.[] | .out[] | select(.b0.op? and .b0.op == 106) | {hexCode: (if .h3 then .h3 else .lh3 end)} ]"
+    "f": "[.[] | .out[] | select(.b0.op? and .b0.op == 106) | {hexCode: (if .h6 then .h6 else .lh6 end)} ]"
   }
 };
 
