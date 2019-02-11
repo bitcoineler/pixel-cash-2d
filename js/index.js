@@ -188,7 +188,7 @@ function switchMode(e){
 
 function load(){
   console.log("mode: ",localStorage['mode'])
-  document.getElementById("channel").innerHTML = "Drawing board: " + channel;
+  document.getElementById("channel").innerHTML = "Channel: <b>" + channel + "</b>";
 
   if(localStorage['mode'] == 'false'){
     BitDbQuery = BitDbQuery_1
