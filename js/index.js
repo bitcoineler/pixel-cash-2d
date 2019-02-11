@@ -7,7 +7,7 @@ const BitcomProtocol = "1BGUipRWPj63awCM2z5FkLJBWvg5iMf3uF";
 const ColorDepth = "0x18" //24bit RGB
 const MapSizeX = "0x0A"  //10bit X
 const MapSizeY = "0x0A"  //10bit Y
-const RoundCapacity = 16655; //max. pixels per tx op_return 99994bytes pixel=(10b|10b|8b|8b|8b)
+const RoundCapacity = 16650; //max. pixels per tx op_return 99994bytes pixel=(10b|10b|8b|8b|8b)
 const canvas = document.querySelector('#canvas');
 const ctx = canvas.getContext('2d');
 
@@ -162,6 +162,7 @@ function bitdb(){
     if(r['c'].length != 0){
       for(i in r['c']){
         var hexCode = r['c'][i]['hexCode']
+        console.log(hexCode)
         var pixel = getXYRGB(hexCode);
       }
     };
@@ -169,6 +170,7 @@ function bitdb(){
     if(r['u'].length != 0){
       for(i in r['u']){
         var hexCode = r['u'][i]['hexCode']
+        console.log(r['u'])
         var pixel = getXYRGB(hexCode);
       }
     };
