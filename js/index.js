@@ -11,6 +11,9 @@ const RoundCapacity = 16650; //max. pixels per tx op_return 99994bytes pixel=(10
 const canvas = document.querySelector('#canvas');
 const ctx = canvas.getContext('2d');
 
+var privatekey
+var address
+
 var size = 4;
 var channel = ""
 var addresses = []
@@ -110,13 +113,12 @@ function pad(num, size) {
 }
 
 function getBalance(address){
-    var address = "qpy3cc67n3j9rpr8c3yx3lv0qc9k2kmfyud9e485w2";
     var url = BitindexApiURL +address;
     fetch(url).then(function(r) {
       return r.json()
     }).then(function(r) {
       console.log(r)
-      document.getElementById("balance").innerHTML = r.data.balance + " satoshis";
+      document.getElementById("balance").innerHTML = r.data.balance + " satoshis | Address: "+address;
     })
 }
 
@@ -162,7 +164,6 @@ function bitdb(){
     if(r['c'].length != 0){
       for(i in r['c']){
         var hexCode = r['c'][i]['hexCode']
-        console.log(hexCode)
         var pixel = getXYRGB(hexCode);
       }
     };
@@ -170,7 +171,6 @@ function bitdb(){
     if(r['u'].length != 0){
       for(i in r['u']){
         var hexCode = r['u'][i]['hexCode']
-        console.log(r['u'])
         var pixel = getXYRGB(hexCode);
       }
     };
@@ -201,7 +201,6 @@ function load(){
   }
   bitdb();
   bitsocket();
-  getBalance();
 }
 
 function setColor(hex){
@@ -237,15 +236,23 @@ function roundUp(num, precision) {
   return Math.ceil(num * precision) / precision
 };
 
+function setPrivatekey(e){
+  privatekey = new datapay.bsv.PrivateKey(e.pkey.value);
+  address = privatekey.toAddress()
+  addressString = address.toString()
+  getBalance(addressString);
+  console.log("WIF Privatekey: ",privatekey.toWIF())
+  console.log("Legacy Address: ",addressString)
+}
+
 let delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 let sendOneTransaction = async function(oneMessage) {
   return new Promise(function(resolve, reject) {
-    let pkey = document.getElementById('pkey').value;
     console.log('Now sending message:', oneMessage);
     let tx = {
       data: [BitcomProtocol,ColorDepth,MapSizeX,MapSizeY,channel,"0x"+oneMessage],
       pay: {
-        key: pkey,
+        key: privatekey.toWIF(),
         rpc: "https://api.bitindex.network"
       }
     };
