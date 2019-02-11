@@ -239,10 +239,9 @@ function roundUp(num, precision) {
 function setPrivatekey(e){
   privatekey = new datapay.bsv.PrivateKey(e.pkey.value);
   address = privatekey.toAddress()
-  addressString = address.toString()
-  getBalance(addressString);
+  getBalance(address.toString());
   console.log("WIF Privatekey: ",privatekey.toWIF())
-  console.log("Legacy Address: ",addressString)
+  console.log("Legacy Address: ",address.toString())
 }
 
 let delay = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -272,8 +271,7 @@ let sendOneTransaction = async function(oneMessage) {
 
 
 async function send(pixelsToSend) {
-  let pkey = document.getElementById('pkey').value;
-  if(!pkey){
+  if(!privatekey){
     console.log('No Privatekey set')
     return false
   }
@@ -307,6 +305,7 @@ async function send(pixelsToSend) {
     startPos = endPos;
   };
   let pixelDict = {};
+  getBalance(address.toString());
 };
 
 function pixelArrayToBin(input){
