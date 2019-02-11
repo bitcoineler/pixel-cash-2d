@@ -13,7 +13,7 @@
   <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container-fluid">
       <div class="navbar-header">
-        <a class="navbar-brand">pixel2blockchain</a>
+        <a class="navbar-brand"></a>
       </div>
       <p class="navbar-text">press 'z' to write into Blockchain</p>
       <form class="navbar-form navbar-left" onsubmit="return false">
@@ -24,7 +24,11 @@
       <p id="drawingboard" class="navbar-text"></p>
       <label class="switch navbar-text">
         <input id="mode" type="checkbox" onclick="switchMode(this);">
-        <span class="slider"></span>
+        <span class="slider">Privatemode:</span>
+      </label>
+      <label class="switch navbar-text">
+        <input id="mode" type="checkbox" onclick="switchEncryptedMode(this);">
+        <span class="slider">Encrypted:</span>
       </label>
 
     </div>
@@ -34,13 +38,16 @@
   </div>
 
   <nav class="navbar navbar-inverse navbar-fixed-bottom">
-    <div class="container-fluid" style='color: white;'>
-      Balance: <span id='balance'>0</span>  >> X|Y: <span id='coordinates'>0|0</span><br>
-      Brush size: <input type="range" min="1" max="20" value="4" oninput="sliderupdate(this);"><br>
+    <div class="container-fluid col-lg-2" style='color: white;'>
       Color: <input id="colorpicker" class="jscolor" value="000000">
     </div>
-        <!-- <li>Select brush size: <input type="range" min="1" max="50" value="5" oninput="sliderupdate(this);"></input></li>
-        <li>Select Color: <input id="colorpicker" class="jscolor" value="ffffff"></input></li> -->
+    <div class="container-fluid col-lg-2" style='color: white;'>
+      Brush size: <span id="brushsize">4</span><input type="range" min="1" max="20" value="4" oninput="sliderupdate(this);"><br>
+    </div>
+    <div class="container-fluid col-lg-2" style='color: white;'>
+      Balance: <span id='balance'>0</span><br>
+      X|Y: <span id='coordinates'><b>0|0</b></span><br>
+    </div>
   </nav>
   <script src="js/jscolor.js"></script>
   <script src="js/index.js"></script>

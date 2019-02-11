@@ -99,6 +99,7 @@ let color = {}
 
 
 function sliderupdate(e){
+  document.getElementById('brushsize').innerHTML = e.value;
   size = parseInt(e.value);
 }
 
@@ -345,7 +346,7 @@ function click(e){
 
 function draw(e) {
     [cX, cY] = [e.offsetX, e.offsetY];
-    document.getElementById('coordinates').innerHTML =  cX + "|" + cY
+    document.getElementById('coordinates').innerHTML =  "<b>"+cX + "|" + cY + "</b>"
     if (!drawingMode) return;
     setPixel(color[0],color[1],color[2],cX,cY,true);
 }
