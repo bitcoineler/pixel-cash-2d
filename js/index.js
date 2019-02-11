@@ -5,24 +5,16 @@ const BitSocketApi = "https://babel.bitdb.network/s/1DHDifPvtPgKFPZMRSxmVHhiPvFm
 const BitDbApiKey = "qzudnqxkd9mplr003rnzr83qmapnyf09yynescajl0";
 const BitcomProtocol = "1BGUipRWPj63awCM2z5FkLJBWvg5iMf3uF";
 const ColorDepth = "0x18" //24bit RGB
-const MapSizeX = "0x01"  //10bit X
-const MapSizeY = "0x01"  //10bit Y
-// const PrefixPixel = "0x8801";
-const RoundCapacity = 16655; //max.18100 pixels per tx op_return 99994bytes pixel=(10b|10b|8b|8b|8b)
+const MapSizeX = "0x0A"  //10bit X
+const MapSizeY = "0x0A"  //10bit Y
+const RoundCapacity = 16655; //max. pixels per tx op_return 99994bytes pixel=(10b|10b|8b|8b|8b)
 const canvas = document.querySelector('#canvas');
 const ctx = canvas.getContext('2d');
 
 var size = 4;
 var drawingboard = ""
 var addresses = []
-
-var mode // 1 => only from []addresses  2 => from any
-if(localStorage['mode']){
-  mode = localStorage['mode'];
-  document.getElementById('mode').checked = mode;
-}else{
-  mode = false
-}
+addresses.push('17faLSy9ByvE3qZSLSScGgrZTZ5YUnVjde')
 
 if(window.location.hash) {
   drawingboard = window.location.hash.slice(1);
@@ -91,28 +83,15 @@ const BitDbQuery_2 = {
   }
 };
 
-
-document.getElementById("drawingboard").innerHTML = "Drawing board: " + drawingboard;
-if(mode==true){
-  addresses.push(drawingboard)
-}
-
-console.log(drawingboard,mode,addresses)
-
 canvas.width = 1024;
 canvas.height = 1024;
 
 ctx.fillStyle = "white";
 ctx.fillRect(0, 0, canvas.width, canvas.height);
-// ctx.strokeStyle = '#2196F3';
-// ctx.lineJoin = 'round';
-// ctx.lineCap = 'round';
-// ctx.lineWidth = size;
-
 
 let drawingMode = false;
-let cX = 0; //X coordinate
-let cY = 0; //Y coordinate
+let cX = 0;
+let cY = 0;
 let changingColor = 0; //color variable responsible for changing color
 let direction = true; //changes the size of the brush
 let pixelDict = {}
@@ -196,18 +175,21 @@ function bitdb(){
 };
 
 function switchMode(e){
-  location.reload();
-
+  console.log("checket:",e.checked)
   if(e.checked){
     localStorage['mode'] = true;
   }else{
     localStorage['mode'] = false;
   }
+  console.log(localStorage['mode'])
+  location.reload();
 }
 
 function load(){
-  console.log("mode: ",mode)
-  if(mode == false){
+  console.log("mode: ",localStorage['mode'])
+  document.getElementById("drawingboard").innerHTML = "Drawing board: " + drawingboard;
+
+  if(localStorage['mode'] == 'false'){
     BitDbQuery = BitDbQuery_1
     BitSocketQuery = BitSocketQuery_1
   }else{
@@ -219,9 +201,8 @@ function load(){
   getBalance();
 }
 
-
-function setColor(R,G,B){
-  [color[0],color[1],color[2]] = [R,G,B]
+function setColor(hex){
+  [color[0],color[1],color[2]] = [parseInt(hex.slice(0,2),16),parseInt(hex.slice(2,4),16),parseInt(hex.slice(4,6),16)]
 };
 
 function getXYRGB(hexCode){
@@ -318,7 +299,6 @@ async function send(pixelsToSend) {
   let pixelDict = {};
 };
 
-// todo: pad noetig??
 function pixelArrayToBin(input){
   console.log("pixelArrayToBin: ",input)
   binCoordinates = []
@@ -333,23 +313,6 @@ function pixelArrayToBin(input){
   }
   return binCoordinates
 }
-
-// function binToPixelArray(input){
-//   console.log("binToPixelArray: ",input)
-//   pixelArray = {}
-//   for (binCoordinate in input){
-//     binPixel = input[binCoordinate]
-//     Y = parseInt(binPixel.substring(0,10),2)
-//     X = parseInt(binPixel.substring(10,20),2)
-//     R = parseInt(binPixel.substring(20,28),2)
-//     G = parseInt(binPixel.substring(28,36),2)
-//     B = parseInt(binPixel.substring(36,44),2)
-//
-//     coordinate = Y+"|"+X
-//     pixelDict[coordinate] = [R,G,B]
-//   }
-//   return pixelArray
-// }
 
 function loadPixels(pixels){
  for (coordinate in pixels){
@@ -368,7 +331,6 @@ function keyPressed(e){
   if(keyCode === 90){
     console.log("Pressed 'z' => Save to Local Storage")
     send(pixelArrayToBin(pixelDict));
-    // console.log(ctx.getImageData(0, 0, canvas.width, canvas.height));
   }
 }
 
@@ -386,10 +348,6 @@ function draw(e) {
     document.getElementById('coordinates').innerHTML =  cX + "|" + cY
     if (!drawingMode) return;
     setPixel(color[0],color[1],color[2],cX,cY,true);
-
-
-    // ctx.lineTo(e.offsetX, e.offsetY);
-    // ctx.stroke();
 }
 
 function setPixel(r,g,b,cX,cY,isNew){
@@ -432,9 +390,7 @@ canvas.addEventListener('click', click);
 canvas.addEventListener('mousemove', draw);
 canvas.addEventListener('mousedown', (e) => {
     drawingMode = true;
-    // [cX, cY] = [e.offsetX, e.offsetY];
-    // ctx.beginPath();
-    // ctx.moveTo(cX, cY);
+    setColor(document.getElementById('colorpicker').value);
 });
 canvas.addEventListener('mouseup', () => drawingMode = false);
 canvas.addEventListener('mouseout', () => drawingMode = false);

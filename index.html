@@ -23,7 +23,7 @@
       </form>
       <p id="drawingboard" class="navbar-text"></p>
       <label class="switch navbar-text">
-        <input id="mode" type="checkbox" onclick="switchMode(this);" checked>
+        <input id="mode" type="checkbox" onclick="switchMode(this);">
         <span class="slider"></span>
       </label>
 
@@ -34,21 +34,13 @@
   </div>
 
   <nav class="navbar navbar-inverse navbar-fixed-bottom">
-    <div class="container-fluid" style='color: red;'>Balance: <span id='balance'>0</span>  >> X|Y: <span id='coordinates'>0|0</span></div>
-    <div class="container-fluid">
-      <ul class="nav navbar-nav">
-        <button class="btn navbar-btn" style='background-color: rgb(255,255,255);' onclick='setColor(255,255,255)'></button>
-        <button class="btn navbar-btn" style='background-color: rgb(0,0,0);' onclick='setColor(0,0,0)'></button>
-        <button class="btn navbar-btn" style='background-color: rgb(255,0,0);' onclick='setColor(255,0,0)'></button>
-        <button class="btn navbar-btn" style='background-color: rgb(255,255,0);' onclick='setColor(255,255,0)'></button>
-        <button class="btn navbar-btn" style='background-color: rgb(0,255,0);' onclick='setColor(0,255,0)'></button>
-        <button class="btn navbar-btn" style='background-color: rgb(0,255,255);' onclick='setColor(0,255,255)'></button>
-        <button class="btn navbar-btn" style='background-color: rgb(0,0,255);' onclick='setColor(0,0,255)'></button>
-        <button class="btn navbar-btn" style='background-color: rgb(255,0,255);' onclick='setColor(255,0,255)'></button>
-        Select brush size: <input type="range" min="1" max="50" value="5" oninput="sliderupdate(this);">
-        Select Color: <input class="jscolor" value="ab2567">
-      </ul>
+    <div class="container-fluid" style='color: white;'>
+      Balance: <span id='balance'>0</span>  >> X|Y: <span id='coordinates'>0|0</span><br>
+      Brush size: <input type="range" min="1" max="20" value="4" oninput="sliderupdate(this);"><br>
+      Color: <input id="colorpicker" class="jscolor" value="000000">
     </div>
+        <!-- <li>Select brush size: <input type="range" min="1" max="50" value="5" oninput="sliderupdate(this);"></input></li>
+        <li>Select Color: <input id="colorpicker" class="jscolor" value="ffffff"></input></li> -->
   </nav>
   <script src="js/jscolor.js"></script>
   <script src="js/index.js"></script>
