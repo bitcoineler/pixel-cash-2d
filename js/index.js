@@ -12,14 +12,14 @@ const canvas = document.querySelector('#canvas');
 const ctx = canvas.getContext('2d');
 
 var size = 4;
-var drawingboard = ""
+var channel = ""
 var addresses = []
 addresses.push('17faLSy9ByvE3qZSLSScGgrZTZ5YUnVjde')
 
 if(window.location.hash) {
-  drawingboard = window.location.hash.slice(1);
+  channel = window.location.hash.slice(1);
 }else{
-  drawingboard = 'all';
+  channel = 'all';
 }
 
 var BitSocketQuery = ""
@@ -28,7 +28,7 @@ const BitSocketQuery_1 = {
 "q": {
   "find": {
     "out.s1": `${BitcomProtocol}`,
-    "out.s5": `${drawingboard}`
+    "out.s5": `${channel}`
   }
 },
 "r": {
@@ -41,7 +41,7 @@ const BitSocketQuery_2 = {
 "q": {
   "find": {
     "out.s1": `${BitcomProtocol}`,
-    "out.s5": `${drawingboard}`,
+    "out.s5": `${channel}`,
     "in.e.a": {
       "$in": addresses
      }
@@ -58,7 +58,7 @@ const BitDbQuery_1 = {
 "q": {
   "find": {
     "out.s1": `${BitcomProtocol}`,
-    "out.s5": `${drawingboard}`
+    "out.s5": `${channel}`
   },
   "limit": 100000
 },
@@ -71,7 +71,7 @@ const BitDbQuery_2 = {
 "q": {
   "find": {
     "out.s1": `${BitcomProtocol}`,
-    "out.s5": `${drawingboard}`,
+    "out.s5": `${channel}`,
     "in.e.a": {
       "$in": addresses
      }
@@ -188,7 +188,7 @@ function switchMode(e){
 
 function load(){
   console.log("mode: ",localStorage['mode'])
-  document.getElementById("drawingboard").innerHTML = "Drawing board: " + drawingboard;
+  document.getElementById("channel").innerHTML = "Drawing board: " + channel;
 
   if(localStorage['mode'] == 'false'){
     BitDbQuery = BitDbQuery_1
@@ -241,7 +241,7 @@ let sendOneTransaction = async function(oneMessage) {
     let pkey = document.getElementById('pkey').value;
     console.log('Now sending message:', oneMessage);
     let tx = {
-      data: [BitcomProtocol,ColorDepth,MapSizeX,MapSizeY,drawingboard,"0x"+oneMessage],
+      data: [BitcomProtocol,ColorDepth,MapSizeX,MapSizeY,channel,"0x"+oneMessage],
       pay: {
         key: pkey,
         rpc: "https://api.bitindex.network"
