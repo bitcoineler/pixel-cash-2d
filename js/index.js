@@ -351,13 +351,14 @@ function draw(e) {
 }
 
 function undo(){
-    console.log(pixels[drawingCounter],drawingCounter)
-    for (coordinate in pixels[drawingCounter]){
-      console.log(coordinate)
-      coordinate = coordinate.split("|")
-      setPixel(255,255,255,coordinate[1],coordinate[0],false)
+    if(drawingCounter >= 1){
+      for (coordinate in pixels[drawingCounter]){
+        coordinate = coordinate.split("|")
+        setPixel(255,255,255,coordinate[1],coordinate[0],false)
+      }
+      pixels[drawingCounter] = {};
+      --drawingCounter
     }
-    --drawingCounter
 }
 
 function setPixel(r,g,b,cX,cY,isNew){
@@ -386,7 +387,6 @@ function setPixel(r,g,b,cX,cY,isNew){
     for (i = 0; i < size; i++){
       for (a = 0; a < size; a++){
         coordinate = cY+"|"+cX
-        console.log(drawingCounter);
         pixels[drawingCounter][coordinate] = [ imagedata.data[0],imagedata.data[1],imagedata.data[2] ]
         ++cX
       }
