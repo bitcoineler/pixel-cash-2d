@@ -334,10 +334,6 @@ function keyPressed(e){
   }
 }
 
-// function toLocalStorage(){
-//   localStorage.pixel = JSON.stringify(pixels);
-// }
-
 function click(e){
   [cX, cY] = [e.offsetX, e.offsetY];
   setPixel(color[0],color[1],color[2],cX,cY,true);
