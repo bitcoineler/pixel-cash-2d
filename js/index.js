@@ -127,6 +127,7 @@ async function bitsocket(){
   var b64 = btoa(JSON.stringify(BitSocketQuery));
   var eventsource = BitSocketApi+b64
   var bitsocket = new EventSource(eventsource)
+  console.log("Eventsource: ",eventsource)
 
   bitsocket.onmessage = function(e) {
     let json = JSON.parse(e.data)
@@ -208,8 +209,23 @@ function setColor(hex){
   [color[0],color[1],color[2]] = [parseInt(hex.slice(0,2),16),parseInt(hex.slice(2,4),16),parseInt(hex.slice(4,6),16)]
 };
 
+
+function convertFromHex(hex) {
+    var hex = hex.toString();//force conversion
+    var str = '';
+    for (var i = 0; i < hex.length; i += 2)
+        str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+    return str;
+}
+
 function getXYRGB(hexCode){
   var pixelSize = 12 //hex
+  var encryption = true;
+
+  if(encryption){
+    hexCode = convertFromHex(hexCode);
+    console.log("fromHextoencstring: ",hexCode)
+  }
   if (hexCode.length >= pixelSize){
     var rounds = hexCode.length / pixelSize
 
@@ -249,8 +265,16 @@ let delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 let sendOneTransaction = async function(oneMessage) {
   return new Promise(function(resolve, reject) {
     console.log('Now sending message:', oneMessage);
+    var encryption = true;
+    if(encryption){
+      secret = 'test';
+      oneMessage = aes_encrypt(oneMessage,secret);
+      console.log('Now sending ENCRYPTED message:', oneMessage);
+    }else{
+      oneMessage = "0x"+oneMessage
+    }
     let tx = {
-      data: [BitcomProtocol,ColorDepth,MapSizeX,MapSizeY,channel,"0x"+oneMessage],
+      data: [BitcomProtocol,ColorDepth,MapSizeX,MapSizeY,channel,oneMessage],
       pay: {
         key: privatekey.toWIF(),
         rpc: "https://api.bitindex.network"
@@ -344,6 +368,14 @@ function draw(e) {
     document.getElementById('coordinates').innerHTML =  "<b>"+cX + "|" + cY + "</b>"
     if (!drawingMode) return;
     setPixel(color[0],color[1],color[2],cX,cY,true);
+}
+
+function aes_encrypt(data,secret){
+  return CryptoJS.AES.encrypt(data, secret).toString();
+}
+
+function aes_decrypt(data,secret){
+  return CryptoJS.AES.decrypt(data, secret).toString(CryptoJS.enc.Utf8);
 }
 
 function undo(){
