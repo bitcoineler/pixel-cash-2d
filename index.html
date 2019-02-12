@@ -29,20 +29,24 @@
       <div class="collapse navbar-collapse">
         <p class="navbar-text"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true" onclick="send(pixelArrayToBin(pixels))"></span></p>
         <p class="navbar-text"><span class="glyphicon glyphicon-backward" aria-hidden="true" onclick="undo()"></span></p>
-        <form class="navbar-form navbar-left" onsubmit="setPrivatekey(this);">
+        <form class="navbar-form navbar-left" onsubmit="setPrivatekey(this); return false;">
           <div class="form-group">
             <input class="form-control" id='pkey' type='password' placeholder='privatekey...' size='35'>
           </div>
+          <button type="submit" class="btn btn-default">OK</button>
+        </form>
+        <form class="navbar-form navbar-left" onsubmit="setEncryption(this); return false;">
           <div class="form-group">
             <input type="checkbox" class="custom-control-input" id="mode" onclick="switchMode(this);">
             <label class="custom-control-label">Privatemode</label>
           </div>
           <div class="form-group">
-            <input type="checkbox" class="custom-control-input" id="encryption" onclick="switchEncryptedMode(this);">
+            <input type="checkbox" class="custom-control-input" id="encryption">
             <label class="custom-control-label">Encryption</label>
             <input class="form-control" id='aeskey' type='password' placeholder='key...' size='10'>
           </div>
           <button type="submit" class="btn btn-default">OK</button>
+        </form>
         </form>
         <p class="navbar-text"><span id="channel"></span></p>
         <ul class="nav navbar-nav navbar-right">

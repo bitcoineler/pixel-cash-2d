@@ -101,6 +101,15 @@ let direction = true; //changes the size of the brush
 let pixels = {}
 let color = {}
 
+function aes_encrypt(data){
+  return CryptoJS.AES.encrypt(data, localStorage['aeskey']).toString();
+}
+
+function aes_decrypt(data){
+  words = CryptoJS.AES.decrypt(data, localStorage['aeskey']).words;
+  text = CryptoJS.enc.Utf8.stringify(words);
+  return text
+}
 
 function sliderupdate(e){
   document.getElementById('brushsize').innerHTML = e.value;
@@ -191,7 +200,9 @@ function switchMode(e){
 }
 
 function load(){
-  console.log("mode: ",localStorage['mode'])
+  console.log("Mode: ",localStorage['mode'])
+  console.log("Encryption: ",localStorage['encryption'],localStorage['aeskey'])
+  localStorage['encryption']
   document.getElementById("channel").innerHTML = "Channel: <b>" + channel + "</b>";
 
   if(localStorage['mode'] == 'false'){
@@ -220,13 +231,11 @@ function convertFromHex(hex) {
 
 function getXYRGB(hexCode){
   var pixelSize = 12 //hex
-  var encryption = true;
-
-  if(encryption){
-    hexCode = convertFromHex(hexCode);
-    console.log("fromHextoencstring: ",hexCode)
-  }
   if (hexCode.length >= pixelSize){
+    if(localStorage['encryption']){
+      hexCode = aes_decrypt(hexCode);
+      console.log("fromHextoEncstring: ",hexCode)
+    }
     var rounds = hexCode.length / pixelSize
 
     var startPos = 0
@@ -261,14 +270,19 @@ function setPrivatekey(e){
   console.log("Legacy Address: ",address.toString())
 }
 
+function setEncryption(e){
+  localStorage['aeskey'] = e.aeskey.value
+  localStorage['encryption'] = e.encryption.checked
+  document.getElementById('aeskey').disabled = e.encryption.checked
+  console.log("AES Key: ",localStorage['aeskey'],localStorage['encryption']);
+}
+
 let delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 let sendOneTransaction = async function(oneMessage) {
   return new Promise(function(resolve, reject) {
     console.log('Now sending message:', oneMessage);
-    var encryption = true;
-    if(encryption){
-      secret = 'test';
-      oneMessage = aes_encrypt(oneMessage,secret);
+    if(localStorage['encryption']){
+      oneMessage = aes_encrypt(oneMessage);
       console.log('Now sending ENCRYPTED message:', oneMessage);
     }else{
       oneMessage = "0x"+oneMessage
@@ -368,14 +382,6 @@ function draw(e) {
     document.getElementById('coordinates').innerHTML =  "<b>"+cX + "|" + cY + "</b>"
     if (!drawingMode) return;
     setPixel(color[0],color[1],color[2],cX,cY,true);
-}
-
-function aes_encrypt(data,secret){
-  return CryptoJS.AES.encrypt(data, secret).toString();
-}
-
-function aes_decrypt(data,secret){
-  return CryptoJS.AES.decrypt(data, secret).toString(CryptoJS.enc.Utf8);
 }
 
 function undo(){
