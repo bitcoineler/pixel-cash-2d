@@ -14,6 +14,7 @@ const ctx = canvas.getContext('2d');
 var privatekey
 var address
 
+var drawingCounter = 0
 var size = 4;
 var channel = ""
 var addresses = []
@@ -97,7 +98,7 @@ let cX = 0;
 let cY = 0;
 let changingColor = 0; //color variable responsible for changing color
 let direction = true; //changes the size of the brush
-let pixelDict = {}
+let pixels = {}
 let color = {}
 
 
@@ -304,48 +305,38 @@ async function send(pixelsToSend) {
     }
     startPos = endPos;
   };
-  let pixelDict = {};
+  let pixels = {};
   getBalance(address.toString());
 };
 
-function pixelArrayToBin(input){
-  console.log("pixelArrayToBin: ",input)
+function pixelArrayToBin(pixels){
+  console.log("pixelArrayToBin: ",pixels)
   binCoordinates = []
-  for (coordinate in input){
-    splitCoordinate = coordinate.split("|")
-    Y = pad((parseInt(splitCoordinate[0]) >>> 0).toString(2),12)
-    X = pad((parseInt(splitCoordinate[1]) >>> 0).toString(2),12)
-    R = pad((input[coordinate][0] >>> 0).toString(2),8)
-    G = pad((input[coordinate][1] >>> 0).toString(2),8)
-    B = pad((input[coordinate][2] >>> 0).toString(2),8)
-    binCoordinates.push(Y+X+R+G+B)
+  for (i in pixels){
+    for (coordinate in pixels[i]){
+      splitCoordinate = coordinate.split("|")
+      Y = pad((parseInt(splitCoordinate[0]) >>> 0).toString(2),12)
+      X = pad((parseInt(splitCoordinate[1]) >>> 0).toString(2),12)
+      R = pad((pixels[i][coordinate][0] >>> 0).toString(2),8)
+      G = pad((pixels[i][coordinate][1] >>> 0).toString(2),8)
+      B = pad((pixels[i][coordinate][2] >>> 0).toString(2),8)
+      binCoordinates.push(Y+X+R+G+B)
+    }
   }
   return binCoordinates
-}
-
-function loadPixels(pixels){
- for (coordinate in pixels){
-   splitCoordinate = coordinate.split("|")
-   Y = splitCoordinate[0]
-   X = splitCoordinate[1]
-   R = pixels[coordinate][0]
-   G = pixels[coordinate][1]
-   B = pixels[coordinate][2]
-   setPixel(R,G,B,X,Y,false);
- }
 }
 
 function keyPressed(e){
   var keyCode = e.which || e.keyCode;
   if(keyCode === 90){
     console.log("Pressed 'z' => Save to Local Storage")
-    send(pixelArrayToBin(pixelDict));
+    send(pixelArrayToBin(pixels));
   }
 }
 
-function toLocalStorage(){
-  localStorage.pixel = JSON.stringify(pixelDict);
-}
+// function toLocalStorage(){
+//   localStorage.pixel = JSON.stringify(pixels);
+// }
 
 function click(e){
   [cX, cY] = [e.offsetX, e.offsetY];
@@ -357,6 +348,16 @@ function draw(e) {
     document.getElementById('coordinates').innerHTML =  "<b>"+cX + "|" + cY + "</b>"
     if (!drawingMode) return;
     setPixel(color[0],color[1],color[2],cX,cY,true);
+}
+
+function undo(){
+    console.log(pixels[drawingCounter],drawingCounter)
+    for (coordinate in pixels[drawingCounter]){
+      console.log(coordinate)
+      coordinate = coordinate.split("|")
+      setPixel(255,255,255,coordinate[1],coordinate[0],false)
+    }
+    --drawingCounter
 }
 
 function setPixel(r,g,b,cX,cY,isNew){
@@ -385,7 +386,8 @@ function setPixel(r,g,b,cX,cY,isNew){
     for (i = 0; i < size; i++){
       for (a = 0; a < size; a++){
         coordinate = cY+"|"+cX
-        pixelDict[coordinate] = [imagedata.data[0],imagedata.data[1],imagedata.data[2]]
+        console.log(drawingCounter);
+        pixels[drawingCounter][coordinate] = [ imagedata.data[0],imagedata.data[1],imagedata.data[2] ]
         ++cX
       }
       ++cY
@@ -399,6 +401,8 @@ canvas.addEventListener('click', click);
 canvas.addEventListener('mousemove', draw);
 canvas.addEventListener('mousedown', (e) => {
     drawingMode = true;
+    ++drawingCounter;
+    pixels[drawingCounter] = {};
     setColor(document.getElementById('colorpicker').value);
 });
 canvas.addEventListener('mouseup', () => drawingMode = false);
