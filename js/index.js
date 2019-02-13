@@ -213,10 +213,15 @@ function load(){
   console.log("Mode: ",localStorage['mode'])
   console.log("Encryption: ",localStorage['encryption'],localStorage['aeskey'])
   document.getElementById("channel").innerHTML = "Channel: <b>" + channel + "</b>";
-  document.getElementById("encryption").checked = localStorage['encryption'];
+  if(localStorage['encryption'] == 'true'){
+    document.getElementById("encryption").checked = true;
+  }else{
+    document.getElementById("encryption").checked = false;
+  }
+
   if(localStorage['aeskey']){
     document.getElementById("aeskey").value = localStorage['aeskey'];
-    document.getElementById("aeskey").disabled = true;
+    document.getElementById("aeskey").disabled = localStorage['encryption'];
   }
 
   if(localStorage['mode'] == 'false'){
