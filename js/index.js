@@ -283,7 +283,6 @@ function setEncryption(e){
   if(!localStorage['encryption']){
     document.getElementById('aeskey').disabled = false;
   }
-  // location.reload();
 }
 
 let delay = ms => new Promise(resolve => setTimeout(resolve, ms));
