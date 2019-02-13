@@ -38,11 +38,11 @@
         <form class="navbar-form navbar-left" onsubmit="setEncryption(this); return false;">
           <div class="form-group">
             <input type="checkbox" class="custom-control-input" id="mode" onclick="switchMode(this);">
-            <label class="custom-control-label">Privatemode</label>
+            <label class="custom-control-label" title="Show only pixels from the channel address (only if channelname is abitcoinaddress)">Privatemode</label>
           </div>
           <div class="form-group">
             <input type="checkbox" class="custom-control-input" id="encryption">
-            <label class="custom-control-label">Encryption</label>
+            <label class="custom-control-label" title="enables encryption mode: everything is encrypted/decrypted with this key">Encryption</label>
             <input class="form-control" id='aeskey' type='password' placeholder='key...' size='10'>
           </div>
           <button type="submit" class="btn btn-default">OK</button>
@@ -83,6 +83,7 @@
       </div>
     </div>
   </nav>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/aes.js"></script> -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
   <script src='https://unpkg.com/datapay'></script>
   <script src="js/jscolor.js"></script>

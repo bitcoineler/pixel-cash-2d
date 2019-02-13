@@ -101,14 +101,24 @@ let direction = true; //changes the size of the brush
 let pixels = {}
 let color = {}
 
+
+
+
+function hex2a(hexx) {
+    var hex = hexx.toString();
+    var str = '';
+    for (var i = 0; (i < hex.length && hex.substr(i, 2) !== '00'); i += 2)
+        str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+    return str;
+}
+
 function aes_encrypt(data){
   return CryptoJS.AES.encrypt(data, localStorage['aeskey']).toString();
 }
 
 function aes_decrypt(data){
-  words = CryptoJS.AES.decrypt(data, localStorage['aeskey']).words;
-  text = CryptoJS.enc.Utf8.stringify(words);
-  return text
+  return hex2a(CryptoJS.AES.decrypt(hex2a(data), localStorage['aeskey']).toString(CryptoJS.enc.utf8));
+
 }
 
 function sliderupdate(e){
@@ -202,8 +212,12 @@ function switchMode(e){
 function load(){
   console.log("Mode: ",localStorage['mode'])
   console.log("Encryption: ",localStorage['encryption'],localStorage['aeskey'])
-  localStorage['encryption']
   document.getElementById("channel").innerHTML = "Channel: <b>" + channel + "</b>";
+  document.getElementById("encryption").checked = localStorage['encryption'];
+  if(localStorage['aeskey']){
+    document.getElementById("aeskey").value = localStorage['aeskey'];
+    document.getElementById("aeskey").disabled = true;
+  }
 
   if(localStorage['mode'] == 'false'){
     BitDbQuery = BitDbQuery_1
@@ -221,23 +235,14 @@ function setColor(hex){
 };
 
 
-function convertFromHex(hex) {
-    var hex = hex.toString();//force conversion
-    var str = '';
-    for (var i = 0; i < hex.length; i += 2)
-        str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
-    return str;
-}
-
 function getXYRGB(hexCode){
   var pixelSize = 12 //hex
-  if (hexCode.length >= pixelSize){
+  if (hexCode && hexCode.length >= pixelSize){
     if(localStorage['encryption']){
       hexCode = aes_decrypt(hexCode);
-      console.log("fromHextoEncstring: ",hexCode)
     }
-    var rounds = hexCode.length / pixelSize
 
+    var rounds = hexCode.length / pixelSize
     var startPos = 0
     for (count = 1; count <= rounds; count++){
       var endPos = startPos+pixelSize
