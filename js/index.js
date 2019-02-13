@@ -219,11 +219,12 @@ function load(){
   }else{
     document.getElementById("encryption").checked = false;
   }
-
   if(localStorage['aeskey']){
     document.getElementById("aeskey").value = localStorage['aeskey'];
   }
-
+  if(!localStorage['mode']){
+    localStorage['mode'] = false;
+  }
   if(localStorage['mode'] == 'false'){
     BitDbQuery = BitDbQuery_1
     BitSocketQuery = BitSocketQuery_1
