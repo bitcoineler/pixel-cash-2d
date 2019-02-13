@@ -280,6 +280,10 @@ function setEncryption(e){
   localStorage['encryption'] = e.encryption.checked
   document.getElementById('aeskey').disabled = e.encryption.checked
   console.log("AES Key: ",localStorage['aeskey'],localStorage['encryption']);
+  if(!localStorage['encryption']){
+    document.getElementById('aeskey').disabled = false;
+  }
+  // location.reload();
 }
 
 let delay = ms => new Promise(resolve => setTimeout(resolve, ms));
