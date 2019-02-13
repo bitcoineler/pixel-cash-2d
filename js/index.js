@@ -215,13 +215,13 @@ function load(){
   document.getElementById("channel").innerHTML = "Channel: <b>" + channel + "</b>";
   if(localStorage['encryption'] == 'true'){
     document.getElementById("encryption").checked = true;
+    document.getElementById("aeskey").disabled = true;
   }else{
     document.getElementById("encryption").checked = false;
   }
 
   if(localStorage['aeskey']){
     document.getElementById("aeskey").value = localStorage['aeskey'];
-    document.getElementById("aeskey").disabled = localStorage['encryption'];
   }
 
   if(localStorage['mode'] == 'false'){
@@ -243,7 +243,7 @@ function setColor(hex){
 function getXYRGB(hexCode){
   var pixelSize = 12 //hex
   if (hexCode && hexCode.length >= pixelSize){
-    if(localStorage['encryption']){
+    if(localStorage['encryption'] == 'true'){
       hexCode = aes_decrypt(hexCode);
     }
 
@@ -285,7 +285,7 @@ function setEncryption(e){
   localStorage['encryption'] = e.encryption.checked
   document.getElementById('aeskey').disabled = e.encryption.checked
   console.log("AES Key: ",localStorage['aeskey'],localStorage['encryption']);
-  if(!localStorage['encryption']){
+  if(localStorage['encryption'] == 'false'){
     document.getElementById('aeskey').disabled = false;
   }
 }
