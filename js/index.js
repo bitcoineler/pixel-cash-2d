@@ -14,6 +14,10 @@ const ctx = canvas.getContext('2d');
 var privatekey
 var address
 
+var scale = 1;
+var minScale = 0.2
+var maxScale = 4
+
 var drawingCounter = 0
 var size = 4;
 var channel = ""
@@ -309,16 +313,17 @@ let sendOneTransaction = async function(oneMessage) {
       }
     };
     console.log(tx)
-    datapay.send(tx, function(errorMessage, transactionId) {
-      if (errorMessage) {
-        console.log('Error sending message', oneMessage, ':', errorMessage);
-        return reject(errorMessage);
-      }
-      else {
-        console.log('Sent message', oneMessage, 'and got txid:', transactionId)
-        return resolve(transactionId);
-      }
-    });
+    console.log(datapay.build(tx))
+    // datapay.send(tx, function(errorMessage, transactionId) {
+    //   if (errorMessage) {
+    //     console.log('Error sending message', oneMessage, ':', errorMessage);
+    //     return reject(errorMessage);
+    //   }
+    //   else {
+    //     console.log('Sent message', oneMessage, 'and got txid:', transactionId)
+    //     return resolve(transactionId);
+    //   }
+    // });
   })
 };
 
@@ -444,6 +449,22 @@ function setPixel(r,g,b,cX,cY,isNew){
   }
 }
 
+function wheelScale(e){
+  if(e.detail<0){
+    console.log("up")
+    if(scale < maxScale){
+      scale = scale + 0.1
+      document.getElementById('canvas').style.transform = 'scale(' +scale+ ')'
+    }
+  }else{
+    console.log("down");
+    if(scale > minScale){
+      scale = scale - 0.1
+      document.getElementById('canvas').style.transform  = 'scale(' +scale+ ')'
+    }
+  }
+}
+
 document.addEventListener('keydown', keyPressed);
 canvas.addEventListener('click', click);
 canvas.addEventListener('mousemove', draw);
@@ -455,6 +476,7 @@ canvas.addEventListener('mousedown', (e) => {
 });
 canvas.addEventListener('mouseup', () => drawingMode = false);
 canvas.addEventListener('mouseout', () => drawingMode = false);
+canvas.addEventListener('DOMMouseScroll', wheelScale);
 
 window.onload = function() {
   load();
