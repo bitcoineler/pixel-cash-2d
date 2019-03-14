@@ -313,17 +313,16 @@ let sendOneTransaction = async function(oneMessage) {
       }
     };
     console.log(tx)
-    console.log(datapay.build(tx))
-    // datapay.send(tx, function(errorMessage, transactionId) {
-    //   if (errorMessage) {
-    //     console.log('Error sending message', oneMessage, ':', errorMessage);
-    //     return reject(errorMessage);
-    //   }
-    //   else {
-    //     console.log('Sent message', oneMessage, 'and got txid:', transactionId)
-    //     return resolve(transactionId);
-    //   }
-    // });
+    datapay.send(tx, function(errorMessage, transactionId) {
+      if (errorMessage) {
+        console.log('Error sending message', oneMessage, ':', errorMessage);
+        return reject(errorMessage);
+      }
+      else {
+        console.log('Sent message', oneMessage, 'and got txid:', transactionId)
+        return resolve(transactionId);
+      }
+    });
   })
 };
 
